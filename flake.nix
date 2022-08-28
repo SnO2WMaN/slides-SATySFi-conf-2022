@@ -3,6 +3,9 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     satysfi-upstream.url = "github:SnO2WMaN/SATySFi/sno2wman/nix-flake";
+    satysfi-formatter-upstream.url = "github:SnO2WMaN/satysfi-formatter/nix-integrate";
+    satysfi-language-server-upstream.url = "github:SnO2WMaN/satysfi-language-server/nix-integrate";
+
     satyxin.url = "github:SnO2WMaN/satyxin";
     satysfi-sno2wman.url = "github:SnO2WMaN/satysfi-sno2wman";
 
@@ -13,8 +16,6 @@
       url = "github:edolstra/flake-compat";
       flake = false;
     };
-    satysfi-formatter.url = "github:SnO2WMaN/satysfi-formatter/nix-integrate";
-    satysfi-language-server.url = "github:SnO2WMaN/satysfi-language-server/nix-integrate";
   };
   outputs = {
     self,
@@ -29,12 +30,11 @@
           overlays = with inputs; [
             devshell.overlay
             satyxin.overlays.default
+            satysfi-language-server-upstream.overlays.default
+            satysfi-formatter-upstream.overlays.default
             satysfi-sno2wman.overlays.default
             (final: prev: {
               satysfi = satysfi-upstream.packages.${system}.satysfi;
-              satysfi-language-server = satysfi-language-server.packages.${system}.satysfi-language-server;
-              satysfi-formatter = satysfi-formatter.packages.${system}.satysfi-formatter;
-              satysfi-formatter-write-each = satysfi-formatter.packages.${system}.satysfi-formatter-write-each;
             })
           ];
         };
@@ -42,9 +42,9 @@
         packages = {
           satysfi-dist = pkgs.satyxin.buildSatysfiDist {
             packages = with pkgs.satyxinPackages; [
-              uline
-              bibyfi
-              fss
+              class-slydifi
+              easytable
+              sno2wman
             ];
           };
           main = pkgs.satyxin.buildDocument {
@@ -63,6 +63,7 @@
             satysfi
             satysfi-formatter-write-each
             satysfi-language-server
+            treefmt
           ];
           commands = [
             {
