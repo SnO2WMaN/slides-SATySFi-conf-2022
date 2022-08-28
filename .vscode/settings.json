@@ -39,7 +39,9 @@
     "，": true,
     "．": true,
     "（": true,
-    "）": true
+    "）": true,
+    "？": true,
+    "！": true
   },
   "workbench.editorAssociations": {
     "*.pdf": "pdf.preview"
