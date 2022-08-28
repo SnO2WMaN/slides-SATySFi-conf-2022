@@ -33,6 +33,7 @@
             satysfi-language-server-upstream.overlays.default
             satysfi-formatter-upstream.overlays.default
             satysfi-sno2wman.overlays.default
+            (import ./nix/satyxin/overlay.nix)
             (final: prev: {
               satysfi = satysfi-upstream.packages.${system}.satysfi;
             })
@@ -44,6 +45,10 @@
             packages = with pkgs.satyxinPackages; [
               class-slydifi
               easytable
+              figbox
+              pseudo-fonts-jetbrains-mono
+              psuedo-fonts-noto-sans
+              psuedo-fonts-noto-sans-cjk-jp
               sno2wman
             ];
           };
