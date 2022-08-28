@@ -1,0 +1,18 @@
+{
+  "jetbrains-mono:JetBrainsMono-Bold" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-Bold.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-BoldItalic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-BoldItalic.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-ExtraBold" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-ExtraBold.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-ExtraBoldItalic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-ExtraBoldItalic.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-ExtraLight" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-ExtraLight.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-ExtraLightItalic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-ExtraLightItalic.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-Italic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-Italic.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-Light" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-Light.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-LightItalic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-LightItalic.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-Medium" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-Medium.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-MediumItalic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-MediumItalic.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-Regular" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-Regular.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-SemiBold" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-SemiBold.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-SemiBoldItalic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-SemiBoldItalic.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-Thin" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-Thin.ttf"}>,
+  "jetbrains-mono:JetBrainsMono-ThinItalic" : <Single: {"src": "dist/fonts/jetbrains-mono/JetBrainsMono-ThinItalic.ttf"}>
+}
