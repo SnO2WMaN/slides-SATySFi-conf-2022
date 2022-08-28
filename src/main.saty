@@ -1,18 +1,169 @@
-@require: stdjareport
-@require: uline/uline
+@require: annot
+@require: list
+@require: easytable/easytable
+@require: code
+@require: class-slydifi/theme/arctic
+@require: sno2wman/sno2wman
 
-document(|
-    title = { はじめての\SATySFi; };
-    author = { SnO2WMaN };
-    show-title = false;
-    show-toc = false;
-|)'<
-    +chapter{}<
-        +section{}<
-            +p{ 叫べ心の形を！！ }
+open FigBox
+open SlydifiOverlay
+open EasyTableAlias
+let-block ctx +code code =
+    let ctx =
+        let fsize = get-font-size ctx in
+            ctx
+                |> set-leading (fsize *' 1.45) in
+        read-block ctx '<
+            +Code.code (code);
         >
-        +section{ uline }<
-            +p{ \uline{ 下線 }テスト }
+let config =
+    let set-font-metrics fsize ctx =
+        ctx
+            |> set-font-size fsize
+            |> set-paragraph-margin (fsize *' 0.6) (fsize *' 0.6)
+            |> set-leading (fsize *' 1.4) in
+    let default-font ctx =
+        ctx
+            |> set-font Latin (`fonts-noto-sans:NotoSans-Regular`, 1.0, 0.0)
+            |> set-font Kana (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0)
+            |> set-font HanIdeographic (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0) in
+    let code-font ctx =
+        ctx
+            |> set-font Latin (`jetbrains-mono:JetBrainsMono-Regular`, 1.0, 0.0)
+            |> set-font Kana (`jetbrains-mono:JetBrainsMono-Regular`, 1.0, 0.0)
+            |> set-font HanIdeographic (`jetbrains-mono:JetBrainsMono-Regular`, 1.0, 0.0) in
+    let bold-font ctx =
+        ctx
+            |> set-font Latin (`fonts-noto-sans:NotoSans-Regular`, 1.0, 0.0)
+            |> set-font Kana (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0)
+            |> set-font HanIdeographic (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0) in
+        (|
+            SlydifiThemeArctic.default-config with font-normal = SlydifiScheme.apply-font-cfg [
+                default-font;
+            ];
+            font-bold = SlydifiScheme.apply-font-cfg [bold-font;];
+            font-code = SlydifiScheme.apply-font-cfg [
+                code-font;
+                set-font-metrics 18pt;
+            ];
+            font-slide-title = SlydifiScheme.apply-font-cfg [bold-font;];
+            font-slide-author = SlydifiScheme.apply-font-cfg [
+                default-font;
+            ];
+            font-slide-date = SlydifiScheme.apply-font-cfg [
+                default-font;
+                set-font-metrics 20pt;
+            ];
+            font-section-title = SlydifiScheme.apply-font-cfg [
+                bold-font;
+                set-font-metrics 28pt;
+            ];
+            font-frame-title = SlydifiScheme.apply-font-cfg [
+                bold-font;
+                set-font-metrics 24pt;
+            ];
+            font-pagenum = SlydifiScheme.apply-font-cfg [
+                default-font;
+                set-font-metrics 12pt;
+            ];
+            font-footnote = SlydifiScheme.apply-font-cfg [
+                default-font;
+                set-font-metrics 12pt;
+            ];
+            length-frame-title-height = 32pt;
+        |)
+in
+
+document'<
+    +set-config (config);
+    +make-title ((|
+        title = {
+        |\SATySFi; w/ Nix|};
+        author = {
+        | \SnO2WMaN;|};
+        date = {
+        |2022.09.24|};
+    |));
+    +section{
+        |はじめに|}<
+        +frame{ 自己紹介 }<
+            +fig-on-left (include-image 128pt `fig/sno2wman.png`)<
+                +p{
+                    \ctx [
+                        set-font-size 32pt;
+                    ]{ \SnO2WMaN; }
+                }
+                +p{ 興味があるものがあると言ったら嘘になる }
+                +listing{
+                    * GitHub: \link (`https://github.com/SnO2WMaN`);
+                    * Twitter: \link (`https://twitter.com/SnO2WMaN`);
+                }
+            >
         >
     >
+    +section{
+        |現在の問題点|}<
+        +frame{ このスライドはNixでビルドされています }<
+            +p{}
+        >
+        +frame{ Nixとは }<>
+        +frame{ satyxin }<>
+        +frame{ \SATySFi;文書をNixでビルドできることのうれしさ(1) }<
+            +p{ Nixが入った環境なら\emph{ どこでも }30秒フラットで }
+            +listing{
+                * pdfが生成出来る
+                * リポジトリに入るだけで執筆環境が用意できる
+            }
+            +p{ どこでもの例 }
+            +listing{
+                * 自分のマシン上（ローカル）
+                * GitHub Actions（CI上）
+            }
+        >
+        +frame{ \SATySFi;文書をNixでビルドできることのうれしさ(2) }<
+            +p{
+                Satyrographosの更新を待たずとも，
+                リポジトリの中で仮パッケージを作ったり，指定のバージョンや最新版のパッケージを利用できる．
+                例えばこのスライドの中だけでも次のことが行われている．
+            }
+            +listing{
+                * figboxパッケージの\code (`feat-include_png`);ブランチ
+                  ** 最新版の\SATySFi;に入ったPNGサポートに対応
+                * fonts-jetbrains-monoパッケージの仮作成
+                  ** lmmonoフォントがいまいちだったので
+            }
+        >
+        +frame{ \SATySFi;そのものをNixでビルド出来るようにする }<
+            +p{
+                Nixの公式パッケージ集で用意されている\SATySFi;（現状v0.7）はかなり場当たり的な対応
+                \footnote{
+                    \code (`.opam`);で指定されたバージョンを全部無視してnixpkgで提供されているOCamlパッケージでビルドしているなど．
+                }
+                が行われている．
+                これをちゃんとさせた上で，最新場のPNGサポートが使いたい！という欲求のもと頑張った．
+                \footnote{ 苦闘の歴史 \link (`https://github.com/gfngfn/SATySFi/pull/344`); }
+            }
+            +fig-center (include-image 384pt `./fig/support_png.png`);
+        >
+        +frame{ 周辺ツール }<
+            +p{
+                VSCodeで楽しく文書を書くために
+                \emph{ \SATySFi; Formatter }や\emph{ \SATySFi; Language Server }なども
+                Nixの世界に持ってきている．
+            }
+            +listing{
+                * \SATySFi; Formatter
+                  ** \link (`https://github.com/usagrada/satysfi-formatter`);
+                  ** フォーク版: \link (`https://github.com/SnO2WMaN/satysfi-formatter/nix-intgl`);
+                * \SATySFi; Language Server
+                  ** \link (`https://github.com/monaqa/satysfi-language-server`);
+                  ** フォーク版: \link (`https://github.com/SnO2WMaN/satysfi-language-server/nix-intgl`);
+            }
+        >
+        +frame{ おわりに }<>
+    >
+    +section{
+        |\SATySFi;文書をNixでビルドする|}<>
+    +section{
+        |現状のsatyxinの課題|}<>
 >
