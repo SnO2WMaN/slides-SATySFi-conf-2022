@@ -1393,11 +1393,11 @@
         "satysfi-language-server": "satysfi-language-server_2"
       },
       "locked": {
-        "lastModified": 1661375067,
-        "narHash": "sha256-QJQuR7R7tEroBT1WsoeRK2Jr1if9oiWs6n48a0JLxFk=",
+        "lastModified": 1661742288,
+        "narHash": "sha256-+54iiMnHAnnLjMlzeI00m/Lmzo+Ogbjga+AG7K6aWcM=",
         "owner": "SnO2WMaN",
         "repo": "satyxin",
-        "rev": "7dffd4d68d9f549107a391cf14eb06ed9bfd4e03",
+        "rev": "a67be3b579aa3ffc06cb4abb51121557a5ae00f1",
         "type": "github"
       },
       "original": {
