@@ -27,24 +27,25 @@ let config =
             |> set-font Latin (`fonts-noto-sans:NotoSans-Regular`, 1.0, 0.0)
             |> set-font Kana (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0)
             |> set-font HanIdeographic (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0) in
+    let bold-font ctx =
+        ctx
+            |> set-font Latin (`fonts-noto-sans:NotoSans-Bold`, 1.0, 0.0)
+            |> set-font Kana (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Bold`, 1.0, 0.0)
+            |> set-font HanIdeographic (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Bold`, 1.0, 0.0) in
     let code-font ctx =
         ctx
             |> set-font Latin (`jetbrains-mono:JetBrainsMono-Regular`, 1.0, 0.0)
             |> set-font Kana (`jetbrains-mono:JetBrainsMono-Regular`, 1.0, 0.0)
             |> set-font HanIdeographic (`jetbrains-mono:JetBrainsMono-Regular`, 1.0, 0.0) in
-    let bold-font ctx =
-        ctx
-            |> set-font Latin (`fonts-noto-sans:NotoSans-Regular`, 1.0, 0.0)
-            |> set-font Kana (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0)
-            |> set-font HanIdeographic (`fonts-noto-sans-cjk-jp:NotoSansCJKjp-Regular`, 1.0, 0.0) in
         (|
             SlydifiThemeArctic.default-config with font-normal = SlydifiScheme.apply-font-cfg [
                 default-font;
+                set-font-metrics 16pt;
             ];
             font-bold = SlydifiScheme.apply-font-cfg [bold-font;];
             font-code = SlydifiScheme.apply-font-cfg [
                 code-font;
-                set-font-metrics 18pt;
+                set-font-metrics 14pt;
             ];
             font-slide-title = SlydifiScheme.apply-font-cfg [bold-font;];
             font-slide-author = SlydifiScheme.apply-font-cfg [
@@ -90,80 +91,229 @@ document'<
             +fig-on-left (include-image 128pt `fig/sno2wman.png`)<
                 +p{
                     \ctx [
-                        set-font-size 32pt;
+                        set-font-size 24pt;
                     ]{ \SnO2WMaN; }
                 }
                 +p{ 興味があるものがあると言ったら嘘になる }
                 +listing{
-                    * GitHub: \link (`https://github.com/SnO2WMaN`);
-                    * Twitter: \link (`https://twitter.com/SnO2WMaN`);
+                    * GitHub: \link ?:({ \@SnO2WMaN }) (`https://github.com/SnO2WMaN`);
+                    * Twitter: \link ?:({ \@SnO2WMaN }) (`https://twitter.com/SnO2WMaN`);
                 }
             >
         >
     >
     +section{
-        |現在の問題点|}<
-        +frame{ このスライドはNixでビルドされています }<
-            +p{}
-        >
-        +frame{ Nixとは }<>
-        +frame{ satyxin }<>
-        +frame{ \SATySFi;文書をNixでビルドできることのうれしさ(1) }<
-            +p{ Nixが入った環境なら\emph{ どこでも }30秒フラットで }
-            +listing{
-                * pdfが生成出来る
-                * リポジトリに入るだけで執筆環境が用意できる
+        |現状の問題点|}<
+        +frame{ \SATySFi;の環境構築(1) }<
+            +p{
+                少なくとも私にとっては\SATySFi;での（満足な）執筆環境の構築は未だに結構面倒だった．
             }
-            +p{ どこでもの例 }
             +listing{
-                * 自分のマシン上（ローカル）
-                * GitHub Actions（CI上）
+                * OPAMの操作にクセがありすぎる
+                  ** 私はOCamlについての講習を受けていません
+                * \strike{ Satyrographosのスペルが覚えづらすぎる }
+                * その他周辺ツールやフォーマッタの用意
+            }
+        >
+        +frame{ \SATySFi;の環境構築(2) }<
+            +p{
+                とはいえ，\TeX;の環境構築よりは遥かに楽
+                \footnote{
+                    \link ?:({ Docker及びdevcontainerを使って若干楽に用意する方法がある． }) (`https://korosuke613.hatenablog.com/entry/2019/06/24/171246`);
+                }
+                ではあり，
+                執筆体験的にも\TeX;に戻るのは少し抵抗がある．
+            }
+            +p{
+                当時の自分はNixに取り憑かれていたので，なんとかNixの世界に落とし込めないか？と画策した．
+                \strike{ そんなに文書も書かないのに… }
+            }
+        >
+    >
+    +section{
+        |Nixについて|}<
+        +frame{ Nixとは(1) }<
+            +p{
+                関数型パッケージマネージャと呼ばれるもの．
+                大雑把に言えば次のような流れでパッケージを生成する．
+                なお，Nixのパッケージの概念は実際は後述するようにかなり広い範囲を表すため，
+                便宜上，\emph{ 生成物 }と呼ぶ．
+            }
+            +enumerate{
+                * DerivationをNix言語で記述する．
+                  ** Derivationはビルド時に上書きできる．
+                  ** これらは容易にgitで管理出来るという点に注意．
+                * Derivationから生成物が生成される．
+                  ** この際，依存するツールなどを含めた全ての入力についてのハッシュを計算する．
+                  ** このハッシュが一致しているなら同じものが生成される筈なので，その際はキャッシュから返すことでビルドをスキップ出来る．
+            }
+        >
+        +frame{ Nixとは(2) }<
+            +p{
+                生成物は実際には\code (`/nix`);以下に全て置かれ，
+                利用者が利用するときにはそれら実体へのsymlinkが上手く張られるようになっている．
+                ところで，\code (`/nix`);に置かれるものには以下のものも含まれる．
+            }
+            +listing{
+                * 適当なファイル構造
+                * 開発環境
+                  ** 実際は，プロジェクト内だけで使うツールへの\code (`$PATH`);を通したりコマンドを定義したスクリプト
+                * dotfiles / OSの設定ファイル
+                  ** %
+                例えば\code (`.zshrc`);や\code (`.vimrc`);，\code (`~/.config/`);以下などを生成，管理
+                \footnote{
+                    \link ?:({ home-manager }) (`https://github.com/nix-community/home-manager`);を参考．
+                }できる．
+                  ** もっと拡張してOSの設定を丸ごとNixで管理，生成することも出来る．
+            }
+        >
+    >
+
+    +section{
+        |完成したもの|}<
+        +frame{ satyxin }<
+            +p{ \link (`https://github.com/SnO2WMaN/satyxin`); }
+            +p{
+                もともとは\link ?:({ AumyF }) (`https://github.com/AumyF`);が最初に作ったものを，
+                大幅に魔改造して作った，
+                \SATySFi;文書をNix上でビルドするための様々なものを提供するためのライブラリ．
+                次のことをする．
+            }
+            +enumerate{
+                * Satyrographosのために書かれた\SATySFi;パッケージをNixのパッケージとして提供する．
+                  ** ただし現状では手動で\code (`Satyrographos`);や\code (`.opam`);ファイルなどを読んで定義している．
+                * \code (`.satysfi/dist`);を一種の生成物と考え，生成するためのwrapperを提供．
+                  ** パッケージから適切なディレクトリにファイルをコピーしたり，フォントのハッシュファイルなどを上手く合体させる．
+                  ** これをプロジェクトのルートに置くとローカルでプレビュービルドが出来る
+                    *** 実際にはsymlinkが張られる
+                * \code (`.satysfi/dist`);を入力に受け取り，ドキュメントをビルドするためのwrapperを提供．
+            }
+        >
+        +frame{ \SATySFi;文書をNixでビルドできることのうれしさ(1) }<
+            +p{
+                Nixが入った環境なら\emph{ どこでも }30秒フラット
+                \footnote{ すでにキャッシュされているなら，という条件付きだが． }で
+                pdfが生成出来る執筆環境をフォーマッタなども含めて構築できる．
+            }
+            +p{
+                例えばこれは，Nixが用意された自分のマシンAで執筆環境を構築できたなら，
+                他のNixが用意されたマシンB（自分のでも，他人のでも！）でも執筆環境を構築出来る，ということを\emph{ 保証する }
+                \footnote{
+                    git，VSCodeやVimなど，あまりにも大前提すぎるものは通常除く．
+                }．
+                これによって，共同執筆の際でも，Nixさえ入れておいてもらえれば楽に環境構築できそう，ということを期待させる．
             }
         >
         +frame{ \SATySFi;文書をNixでビルドできることのうれしさ(2) }<
             +p{
-                Satyrographosの更新を待たずとも，
-                リポジトリの中で仮パッケージを作ったり，指定のバージョンや最新版のパッケージを利用できる．
+                Satyrographosのリポジトリの更新を待たずとも，
+                リポジトリの中だけで使う仮パッケージを作ることも，
+                自由に指定のバージョンや最新版
+                \footnote{
+                    バージョンである必要もなく，Gitのコミット単位で切り替えが可能である．
+                }
+                へ切り替えることが出来る．
+                これはNixがビルド時にDerivationを上書きできる性質から可能となっている．
+            }
+            +p{
                 例えばこのスライドの中だけでも次のことが行われている．
             }
             +listing{
-                * figboxパッケージの\code (`feat-include_png`);ブランチ
-                  ** 最新版の\SATySFi;に入ったPNGサポートに対応
-                * fonts-jetbrains-monoパッケージの仮作成
-                  ** lmmonoフォントがいまいちだったので
+                * figboxパッケージの\code (`feat-include_png`);ブランチ．
+                  ** 最新版の\SATySFi;に入ったPNGサポートに対応．
+                * fonts-jetbrains-monoパッケージの仮作成．
+                  ** lmmonoフォントがいまいち合っていなかったので．
+                * \SATySFi;そのもののフォーク時最新の（\code (`master`);）ブランチへの追従させている．
             }
         >
-        +frame{ \SATySFi;そのものをNixでビルド出来るようにする }<
+        +frame{ 実証実験 }<
+            +p{
+                \emph{
+                    このスライドは，実際にsatyxinを使ってビルドされています！
+                }
+            }
+            +p{
+                GitHub Actions上でNixを用意するActionはすでに用意されており
+                \footnote{
+                    \link ?:({ cachix/install-nix-action }) (`https://github.com/cachix/install-nix-action`);
+                }．
+                生成物はそのままGitHub Pagesに投げることが出来る
+                \footnote{
+                    本題と関係ないが，最近，ベータ版だが\code (`gh-pages`);ブランチ無しで
+                    \link ?:({
+                    Actionから直接GitHub Pagesにデプロイが出来るようになっている．
+                    }) (`https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site#publishing-with-a-custom-github-actions-workflow`);
+                }．
+                ビルドの手順はsatyxinが隠蔽するため，
+                利用者/CI上では \code (`nix build`);の1行でpdfが生成されるというシンプルさもある．
+            }
+            +listing{
+                * \link ?:({ リポジトリ }) (`https://github.com/SnO2WMaN/slides-SATySFi-conf-2022`);
+                * \link ?:({ GitHub Pages上のpdfファイル }) (`https://sno2wman.github.io/slides-SATySFi-conf-2022/main.pdf`);
+            }
+        >
+    >
+    +section{
+        |その他の話題|}<
+        +frame{ \SATySFi;自体をNixでビルド出来るようにする }<
             +p{
                 Nixの公式パッケージ集で用意されている\SATySFi;（現状v0.7）はかなり場当たり的な対応
                 \footnote{
                     \code (`.opam`);で指定されたバージョンを全部無視してnixpkgで提供されているOCamlパッケージでビルドしているなど．
                 }
                 が行われている．
-                これをちゃんとさせた上で，最新場のPNGサポートが使いたい！という欲求のもと頑張った．
-                \footnote{ 苦闘の歴史 \link (`https://github.com/gfngfn/SATySFi/pull/344`); }
+                これをちゃんとさせた上で，最新版のPNGサポートが使いたい！という欲求のもと，
+                \SATySFi;自体をNixでビルド出来るようにした
+                \footnote{ \link ?:({ 苦闘の歴史 }) (`https://github.com/gfngfn/SATySFi/pull/344`);． }
+                ．
             }
             +fig-center (include-image 384pt `./fig/support_png.png`);
         >
         +frame{ 周辺ツール }<
             +p{
                 VSCodeで楽しく文書を書くために
-                \emph{ \SATySFi; Formatter }や\emph{ \SATySFi; Language Server }なども
-                Nixの世界に持ってきている．
+                \link ?:({ \SATySFi; Formatter }) (`https://github.com/usagrada/satysfi-formatter`);
+                や
+                \link ?:({ \SATySFi; Language Server }) (`https://github.com/monaqa/satysfi-language-server`);
+                などもフォークした上でNixの世界に持ってきている．
             }
             +listing{
-                * \SATySFi; Formatter
-                  ** \link (`https://github.com/usagrada/satysfi-formatter`);
-                  ** フォーク版: \link (`https://github.com/SnO2WMaN/satysfi-formatter/nix-intgl`);
-                * \SATySFi; Language Server
-                  ** \link (`https://github.com/monaqa/satysfi-language-server`);
-                  ** フォーク版: \link (`https://github.com/SnO2WMaN/satysfi-language-server/nix-intgl`);
+                * \link (`https://github.com/SnO2WMaN/satysfi-formatter/nix-intgl`);
+                * \link (`https://github.com/SnO2WMaN/satysfi-language-server/nix-intgl`);
+            }
+            +p{
+                これは本題とは関係ないが，\link ?:({ textlint }) (`https://github.com/textlint/textlint`);
+                という自然言語に関するlinter
+                （二重否定，ら抜き言葉への警告などを行う）も，
+                \SATySFi;上でも使える
+                \footnote{
+                    \SATySFi;のASTを構成して文章の部分だけlintをかける為のtextlintのプラグインを書く必要がある（はず）．
+                    詳しくはよく調べてないが，
+                    \link ?:({ monaqa/tree-sitter-satysfi }) (`https://github.com/monaqa/tree-sitter-satysfi`);
+                    とかを使って頑張れば出来るんじゃないか？と思う，
+                    誰か挑戦してみてください．
+                }ようにし，より文書を書く体験を向上させていきたい．
             }
         >
-        +frame{ おわりに }<>
     >
     +section{
-        |\SATySFi;文書をNixでビルドする|}<>
-    +section{
-        |現状のsatyxinの課題|}<>
+        |おわりに|}<
+        +frame{ 課題など }<
+            +p{ satyxinの現状の課題としてはこのようなものがある． }
+            +listing{
+                * 足りてないパッケージについてもドシドシ追加する
+                * \SATySFi; v0.1.0で導入が検討されているパッケージ管理システムについても追随できるようにする．
+                * そもそもNixのユーザが少なすぎて解説しても旨味がよくわからない．
+                  ** なんとかするために現状Nixについての本を執筆中です．
+            }
+            +p{
+                satyxinに依らない個人的な課題としてはこのようなものがある．
+            }
+            +listing{
+                * 執筆体験のより向上を目指す．
+                * リポジトリを登録すればarxivのような感じでpdfの生成とかも全部やってくれるようなポータルの構築（構想だけ）．
+                  ** 訂正依頼とかはIssueとかPull Requestなどで出せば良い．
+            }
+        >
+    >
 >
