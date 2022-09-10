@@ -1,15 +1,19 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    satyxin.url = "github:SnO2WMaN/satyxin";
+    satysfi-sno2wman = {
+      url = "github:SnO2WMaN/satysfi-sno2wman";
+      inputs.satyxin.follows = "satyxin";
+    };
+  };
 
+  # dev
+  inputs = {
     satysfi-upstream.url = "github:SnO2WMaN/SATySFi/sno2wman/nix-flake";
     satysfi-formatter-upstream.url = "github:SnO2WMaN/satysfi-formatter/nix-integrate";
     satysfi-language-server-upstream.url = "github:SnO2WMaN/satysfi-language-server/nix-integrate";
 
-    satyxin.url = "github:SnO2WMaN/satyxin";
-    satysfi-sno2wman.url = "github:SnO2WMaN/satysfi-sno2wman";
-
-    # dev
     devshell.url = "github:numtide/devshell";
     flake-utils.url = "github:numtide/flake-utils";
     flake-compat = {
@@ -17,6 +21,7 @@
       flake = false;
     };
   };
+
   outputs = {
     self,
     nixpkgs,
@@ -61,7 +66,7 @@
         };
         defaultPackage = self.packages."${system}".main;
 
-        devShell = pkgs.devshell.mkShell {
+        devShells.default = pkgs.devshell.mkShell {
           packages = with pkgs; [
             alejandra
             dprint

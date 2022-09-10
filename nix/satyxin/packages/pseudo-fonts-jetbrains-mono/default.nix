@@ -10,7 +10,7 @@
 in
   stdenv.mkDerivation {
     inherit version;
-    name = "satyxin-psuedo-fonts-jetbrains-mono-${version}";
+    pname = "satyxin-psuedo-fonts-jetbrains-mono";
 
     dontBuild = true;
     dontUnpack = true;

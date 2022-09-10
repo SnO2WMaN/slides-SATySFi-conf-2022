@@ -5,7 +5,7 @@ final: prev: {
       # override
       figbox = prev.satyxinPackages.figbox.overrideAttrs (oa: {
         version = "0.1.4-feat-include_png";
-        sources = builtins.toJSON (let
+        copyfrom = let
           root = final.fetchFromGitHub {
             owner = "monaqa";
             repo = "satysfi-figbox";
@@ -14,7 +14,7 @@ final: prev: {
           };
         in [
           "${root}/src"
-        ]);
+        ];
       });
       # new
       pseudo-fonts-jetbrains-mono = final.callPackage (import ./packages/pseudo-fonts-jetbrains-mono) {};
